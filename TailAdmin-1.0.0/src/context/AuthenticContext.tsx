@@ -29,7 +29,7 @@ const Authcontext = ({children}:any) => {
         catch (error:any) {
             if (error.response?.status === 401) {
                 
-                Navigation('/Dashboard/signin')
+                Navigation('/signin')
                 context.setchecknote("please login first")
                 return false
             }
