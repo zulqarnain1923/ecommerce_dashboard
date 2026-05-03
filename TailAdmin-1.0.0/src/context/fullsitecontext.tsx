@@ -19,7 +19,7 @@ type Props = {
 
 // ✅ Provider Component
 export const FullSiteProvider = ({ children }: Props) => {
-  const [checknote, setchecknote] = useState(undefined);
+  const [checknote, setchecknote] = useState(null);
   const [check, setcheck] = useState<boolean>(false);
   const [deleteconfirm,setdeleteconfirm]= useState(false)
   
