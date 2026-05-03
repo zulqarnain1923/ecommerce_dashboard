@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createContext ,useRef,useContext} from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -16,7 +16,9 @@ const Authcontext = ({children}:any) => {
     const Navigation = useNavigate()
 
 
-
+    useEffect(()=>{
+        Navigation("/Dashboard/")
+    },[])
     const checkuserauth = async () => {
         try {
             const res = await axios.post(`${url}/api/user/token/`, {}, { withCredentials: true })

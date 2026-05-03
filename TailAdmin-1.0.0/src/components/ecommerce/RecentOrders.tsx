@@ -8,7 +8,6 @@ import {
 import { useState,useEffect, useContext } from "react";
 import Badge from "../ui/badge/Badge";
 import { Authenticate } from "../../context/AuthenticContext";
-import { FullSiteContext } from "../../context/fullsitecontext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 

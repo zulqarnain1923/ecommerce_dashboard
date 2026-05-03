@@ -101,11 +101,11 @@ export default function App() {
           </Route>
 
           {/* Auth Layout */}
-          <Route path="signin" element={<SignIn />} />
+          <Route path="/signin/" element={<SignIn />} />
          
 
           {/* Fallback Route */}
-          <Route path="*" element={<NotFound />} />
+          
         </Routes>
         </Authcontext>
       </Router>
