@@ -39,7 +39,7 @@ const SalesManagementPage: React.FC = () => {
   // -- State --
   const Navigation = useNavigate()
   const context: any = useContext(FullSiteContext)
-  const authcontext:any= useContext(Authenticate)
+  const authcontext: any = useContext(Authenticate)
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<Filters>({
@@ -65,13 +65,13 @@ const SalesManagementPage: React.FC = () => {
   const loadSales = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get<Sale[]>(`${context.url}sales/get/`, {headers:{Authorization:`Bearer ${authcontext.access}`}});
+      const { data } = await axios.get<Sale[]>(`${context.url}sales/get/`, { headers: { Authorization: `Bearer ${authcontext.access.current}` } });
       setSales(data);
-    } catch (error:any) {
-      if(error.response?.status===401){
-        const flag= authcontext.runfunction(null,null,"checkuserauth")
-        if (flag){
-          const { data } = await axios.get<Sale[]>(`${context.url}sales/get/`, {headers:{Authorization:`Bearer ${authcontext.access}`}});
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        const flag = await authcontext.runfunction(null, null, "checkuserauth")
+        if (flag) {
+          const { data } = await axios.get<Sale[]>(`${context.url}sales/get/`, { headers: { Authorization: `Bearer ${authcontext.access.current}` } });
           setSales(data);
         }
       }
@@ -89,20 +89,20 @@ const SalesManagementPage: React.FC = () => {
     if (!modalState.saleId) return;
 
     try {
-      const res = await axios.put(`${context.url}sales/put/`, modalState,{headers:{Authorization:`Bearer ${authcontext.access}`}});
+      const res = await axios.put(`${context.url}sales/put/`, modalState, { headers: { Authorization: `Bearer ${authcontext.access.current}` } });
       context.setchecknote(res.data.message)
       // await loadSales();
-    } catch (error:any) {
-      if (error.response?.status=== 401){
+    } catch (error: any) {
+      if (error.response?.status === 401) {
 
-        const flag = authcontext.runfunction(null,null,"checkuserauth")
+        const flag = await authcontext.runfunction(null, null, "checkuserauth")
 
-        if (flag){
-          const res = await axios.put(`${context.url}sales/put/`, modalState,{headers:{Authorization:`Bearer ${authcontext.access}`}});
+        if (flag) {
+          const res = await axios.put(`${context.url}sales/put/`, modalState, { headers: { Authorization: `Bearer ${authcontext.access.current}` } });
           context.setchecknote(res.data.message)
         }
-        else{
-        context.setchecknote("error in stoping sale")
+        else {
+          context.setchecknote("error in stoping sale")
         }
       }
 
@@ -233,7 +233,7 @@ const SalesManagementPage: React.FC = () => {
             />
           </div>
 
-          
+
           <div className='flex justify-between w-full max-w-[500px]'>
             {/* Filter Status */}
             <div className="">
@@ -299,7 +299,7 @@ const SalesManagementPage: React.FC = () => {
                     <tr key={sale.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors group ${isActiveRow}`}>
                       <td className="ps-2 px-1 py-4">
                         <div className="flex flex-col">
-                          <span className="font-medium text-gray-900 dark:text-white hover:underline cursor-pointer" onClick={()=>Navigation(`/Dashboard/view/sale/${sale.id}`)}>{sale.name}</span>
+                          <span className="font-medium text-gray-900 dark:text-white hover:underline cursor-pointer" onClick={() => Navigation(`/Dashboard/view/sale/${sale.id}`)}>{sale.name}</span>
                           <span className="text-xs text-gray-500 dark:text-gray-400">{sale.title}</span>
                           <span className="text-xs text-gray-400 dark:text-gray-500 mt-1 flex items-center">
                             <Tag className="w-3 h-3 mr-1" /> {sale.apply_on === 'all' ? 'All Products' : 'Category'}

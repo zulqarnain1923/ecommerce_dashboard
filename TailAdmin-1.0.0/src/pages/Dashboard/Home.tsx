@@ -22,8 +22,8 @@ export default function Home() {
 
   const per_catagory_sale = async () => {
     try {
-      const res = await axios.get(`${authcontext.url}order/month/data/`, { headers: { Authorization: `Bearer ${authcontext.access}` } })
-      console.log(res.data)
+      const res = await axios.get(`${authcontext.url}order/month/data/`, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
+      
 
       const ctg = res.data.catagory.map((item: any) => item.product__catagory__name)
       const sold = res.data.catagory.map((item: any) => item.total_sold)
@@ -34,15 +34,14 @@ export default function Home() {
       setTotalsold(sold)
       setMonth(mth)
       setTotalorder(order)
-      console.log(mth, order)
+      
     }
 
     catch (error: any) {
       if (error.response?.status === 401) {
-        const flag = authcontext.runfunction(null, null, "checkuserauth")
+        const flag =await authcontext.runfunction(null, null, "checkuserauth")
         if (flag) {
-          const res = await axios.get(`${authcontext.url}order/month/data/`, { headers: { Authorization: `Bearer ${authcontext.access}` } })
-          console.log(res.data)
+          const res = await axios.get(`${authcontext.url}order/month/data/`, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
 
           const ctg = res.data.catagory.map((item: any) => item.product__catagory__name)
           const sold = res.data.catagory.map((item: any) => item.total_sold)
@@ -53,7 +52,7 @@ export default function Home() {
           setTotalsold(sold)
           setMonth(mth)
           setTotalorder(order)
-          console.log(mth, order)
+         
         }
 
         console.error("Error fetching data:")

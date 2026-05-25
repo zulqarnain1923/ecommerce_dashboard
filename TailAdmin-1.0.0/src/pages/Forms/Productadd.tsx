@@ -119,7 +119,7 @@ export default function ProductWithVariantsForm() {
             variants.sizes.forEach(s => finaldata.append("sizes", s));
             variants.colors.forEach(c => finaldata.append("colors", c));
             variants.weights.forEach(w => finaldata.append("weights", w));
-            console.log(finaldata)
+
             return finaldata;
         }
     };
@@ -130,7 +130,7 @@ export default function ProductWithVariantsForm() {
         const finaldata = creatformdata();
         if (finaldata) {
             try {
-                const res = await axios.post(`${context.url}post/`, finaldata, { headers: { Authorization: `Bearer ${authcontext.access}` } })
+                const res = await axios.post(`${context.url}post/`, finaldata, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
                 context.setchecknote(res.data.message)
 
                 setProduct({
@@ -155,11 +155,12 @@ export default function ProductWithVariantsForm() {
                     sizes: "",
                     weights: "",
                 });
+                refimage.current = [];
             } catch (error: any) {
                 if (error.response?.status === 401) {
-                    const flag = authcontext.runfunction(null, null, "checkuserauth")
+                    const flag = await authcontext.runfunction(null, null, "checkuserauth")
                     if (flag) {
-                        const res = await axios.post(`${context.url}post/`, finaldata, { headers: { Authorization: `Bearer ${authcontext.access}` } })
+                        const res = await axios.post(`${context.url}post/`, finaldata, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
                         context.setchecknote(res.data.message)
 
                         setProduct({
@@ -184,6 +185,7 @@ export default function ProductWithVariantsForm() {
                             sizes: "",
                             weights: "",
                         });
+                        refimage.current = [];
                     }
                 }
             }

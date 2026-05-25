@@ -8,6 +8,7 @@ import {
 import { useState,useEffect, useContext } from "react";
 import Badge from "../ui/badge/Badge";
 import { Authenticate } from "../../context/AuthenticContext";
+import { FullSiteContext } from "../../context/fullsitecontext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -80,21 +81,20 @@ export default function RecentOrders() {
   const fetchorders = async () => {
     try {
 
-      const res= await axios.get(`${authcontext.url}order/get/`, {params:{type:"recent"}, headers:{Authorization:`Bearer ${authcontext.access}`}})
+      const res= await axios.get(`${authcontext.url}order/get/`, {params:{type:"recent"}, headers:{Authorization:`Bearer ${authcontext.access.current}`}})
         setOrder((res.data));
-        console.log(res.data)
 
     } catch (error:any) {
       if (error.response?.status===401){
         
-        const flag = authcontext.runfunction(null,null,"checkuserauth")
-
+        const flag =await authcontext.runfunction(null,null,"checkuserauth")
+        
         if (flag){
-          const res= await axios.get(`${authcontext.url}order/get/`, {params:{type:"recent"}, headers:{Authorization:`Bearer ${authcontext.access}`}})
+          const res= await axios.get(`${authcontext.url}order/get/`, {params:{type:"recent"}, headers:{Authorization:`Bearer ${authcontext.access.current}`}})
           setOrder((res.data));
           }
         }else{
-          console.log(error)
+          console.log("error")
       }
     };
   }

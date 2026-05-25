@@ -170,17 +170,17 @@ export default function EditProductWithVariantsForm() {
         if (finaldata) {
             try{
 
-            const res =await axios.put(`${context.url}put/${id}`, finaldata,{headers:{Authorization:`Bearer ${authcontext.access}`}}) // Using PUT with ID
+            const res =await axios.put(`${context.url}put/${id}`, finaldata,{headers:{Authorization:`Bearer ${authcontext.access.current}`}}) // Using PUT with ID
                 context.setchecknote(res.data.message);
                 Navigation(-1);  // Navigate back after success
         
             }catch (error:any){
 
                 if (error.response?.status=== 401){
-                    const flag = authcontext.runfunction(null,null,"checkuserauth")
+                    const flag =await authcontext.runfunction(null,null,"checkuserauth")
                     
                     if (flag){
-                        const res =await axios.put(`${context.url}put/${id}`, finaldata,{headers:{Authorization:`Bearer ${authcontext.access}`}}) // Using PUT with ID
+                        const res =await axios.put(`${context.url}put/${id}`, finaldata,{headers:{Authorization:`Bearer ${authcontext.access.current}`}}) // Using PUT with ID
                         context.setchecknote(res.data.message);
                         Navigation(-1);
                     }

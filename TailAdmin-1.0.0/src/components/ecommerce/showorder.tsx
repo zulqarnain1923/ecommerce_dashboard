@@ -27,9 +27,9 @@ export default function RecentOrders() {
   const [option, setoption] = useState<any>(null)
   const [filter, setfilter] = useState({})
   const [checkfilter, setcheckfilter] = useState("top-[-100px]")
-  
- 
-  const putstatus= useRef({})
+
+
+  const putstatus = useRef({})
 
   const addfiltervalue = (e: any) => {
     setfilter({ ...filter, [e.target.name]: e.target.value })
@@ -38,20 +38,21 @@ export default function RecentOrders() {
   const fetchorders = async () => {
     try {
 
-      const res= await axios.get(`${context.url}order/get/`, { params: { dashboard:"true" ,...filter }, headers:{Authorization:`Bearer ${authcontext.access}`}})
-        setOrders((res.data));
+      const res = await axios.get(`${context.url}order/get/`, { params: { dashboard: "true", ...filter }, headers: { Authorization: `Bearer ${authcontext.access.current}` } })
+      setOrders((res.data));
 
-    } catch (error:any) {
-      if (error.response?.status===401){
-        
-        const flag = authcontext.runfunction(null,null,"checkuserauth")
+    } catch (error: any) {
+      if (error.response?.status === 401) {
 
-        if (flag){
-          const res= await axios.get(`${context.url}order/get/`, { params: { dashboard:"true" ,...filter },headers:{Authorization:`Bearer ${authcontext.access}`}})
+        const flag = await authcontext.runfunction(null, null, "checkuserauth")
+
+        if (flag) {
+
+          const res = await axios.get(`${context.url}order/get/`, { params: { dashboard: "true", ...filter }, headers: { Authorization: `Bearer ${authcontext.access.current}` } })
           setOrders((res.data));
-          }
-        }else{
-          console.log(error)
+        }
+      } else {
+        console.log("error")
       }
     };
   }
@@ -60,70 +61,70 @@ export default function RecentOrders() {
     fetchorders();
   }, [])
 
-  const clearfunction= async() =>{
+  const clearfunction = async () => {
     setcheckfilter("top-[-100px]")
-    setfilter({status:""})
-     try {
-      
-      const res= await axios.get(`${context.url}order/get/` , {headers:{Authorization:`Bearer ${authcontext.access}`}})
-         setOrders((res.data))
-      
-    } catch (error:any) {
-      if (error.response?.status=== 401){
+    setfilter({ status: "" })
+    try {
 
-        const flag = authcontext.runfunction(null,null,"checkuserauth")
+      const res = await axios.get(`${context.url}order/get/`, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
+      setOrders((res.data))
 
-        if (flag){
-          const res= await axios.get(`${context.url}order/get/` , {headers:{Authorization:`Bearer ${authcontext.access}`}})
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+
+        const flag = await authcontext.runfunction(null, null, "checkuserauth")
+
+        if (flag) {
+          const res = await axios.get(`${context.url}order/get/`, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
           setOrders((res.data))
         }
       }
-      else{
-        console.log(error)
+      else {
+        console.log("error")
       }
     };
 
-    }
+  }
 
   useEffect(() => {
-      const click = () => {
-        setoption(null)
-      }
-      window.addEventListener('click', click)
-      return () => {
-        window.removeEventListener('click', click)
-      }
-    }, [])
+    const click = () => {
+      setoption(null)
+    }
+    window.addEventListener('click', click)
+    return () => {
+      window.removeEventListener('click', click)
+    }
+  }, [])
 
   const toogle = (e: any, index: number) => {
-      e.stopPropagation();
+    e.stopPropagation();
 
-      if (option === null) { setoption(index); return true }
+    if (option === null) { setoption(index); return true }
 
-      if (option === index) { setoption(null); return true }
-      else { setoption(index) }
+    if (option === index) { setoption(null); return true }
+    else { setoption(index) }
 
-    }
+  }
 
-  const changestatus=async(e:any,index:number,status:string,id:string)=>{
-    toogle(e,index)
-    putstatus.current={id:id,status:status}
-    try{
-      const res= await axios.put(`${context.url}order/add/order/`,putstatus.current, {headers:{Authorization:`Bearer ${authcontext.access}`}})
+  const changestatus = async (e: any, index: number, status: string, id: string) => {
+    toogle(e, index)
+    putstatus.current = { id: id, status: status }
+    try {
+      const res = await axios.put(`${context.url}order/add/order/`, putstatus.current, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
       context.setchecknote(res.data.message)
       fetchorders()
     }
-    catch(error:any){
-      if (error.response?.status=== 401){
-        const flag= authcontext.runfunction(null,null,"checkuserauth")
-        if (flag){
-          const res= await axios.put(`${context.url}order/add/order/`,putstatus.current, {headers:{Authorization:`Bearer ${authcontext.access}`}})
+    catch (error: any) {
+      if (error.response?.status === 401) {
+        const flag = await authcontext.runfunction(null, null, "checkuserauth")
+        if (flag) {
+          const res = await axios.put(`${context.url}order/add/order/`, putstatus.current, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
           context.setchecknote(res.data.message)
           fetchorders()
         }
       }
-      else{
-        console.log(error)
+      else {
+        console.log("error")
       }
     }
   }
@@ -153,9 +154,9 @@ export default function RecentOrders() {
         <div className="flex  gap-6 items-center justify-center ">
           <p className="bg-blue-500 h-6 text-white text-[12px] rounded px-1 cursor-pointer hover:bg-blue-600 cursor-pointer" onClick={fetchorders}>Apply</p>
 
-          <div  className="flex flex-col justify-center items-center">
-          <X className={`${mainbg} w-4 pointer cursor-pointer hover:text-gray-500 `} onClick={() => setcheckfilter("top-[-100px]")}></X>
-          <p className="text-red-500 text-[14px] hover:text-red-700 cursor-pointer" onClick={()=> (clearfunction())}>clear</p>
+          <div className="flex flex-col justify-center items-center">
+            <X className={`${mainbg} w-4 pointer cursor-pointer hover:text-gray-500 `} onClick={() => setcheckfilter("top-[-100px]")}></X>
+            <p className="text-red-500 text-[14px] hover:text-red-700 cursor-pointer" onClick={() => (clearfunction())}>clear</p>
           </div>
 
         </div>
@@ -230,7 +231,7 @@ export default function RecentOrders() {
           {/* Table Body */}
 
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {order ? order.map((ord:any, index:number) => (
+            {order ? order.map((ord: any, index: number) => (
               <TableRow key={index} className="relative">
                 <TableCell className="py-3">
                   <div className="flex items-center gap-3">
@@ -258,33 +259,33 @@ export default function RecentOrders() {
                   {ord.pr_price}
                 </TableCell>
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  <div className={`cursor-pointer max-w-[70px]`} onClick={(e)=>toogle(e, index)} >
-                  <Badge
-                    size="sm"
-                    color={
-                      ord.status === "delivered"
-                        ? "success"
-                        : ord.status === "pending"                       
-                          ? "error"
-                          :ord.status === "shipped"
-                            ? "info"
-                            :"error"
-                    }>
-                    {ord.status}
-                  </Badge>
+                  <div className={`cursor-pointer max-w-[70px]`} onClick={(e) => toogle(e, index)} >
+                    <Badge
+                      size="sm"
+                      color={
+                        ord.status === "delivered"
+                          ? "success"
+                          : ord.status === "pending"
+                            ? "error"
+                            : ord.status === "shipped"
+                              ? "info"
+                              : "error"
+                      }>
+                      {ord.status}
+                    </Badge>
                   </div>
 
                 </TableCell>
                 <div className={`${mainbg} absolute top-5 right-2 z-50 shadow-[0_0_5px_gray] p-2 rounded ${option === index ? "block" : "hidden"} `} onClick={(e) => e.stopPropagation()}>
                   <p className="text-center text-[12px] text-gray-600">Change Status</p>
                   <div className="flex flex-col gap-2 mt-3 ">
-                    <p className={`text-[14px] cursor-pointer ${theme === "dark"? " bg-gray-600 px-2 rounded hover:bg-gray-700 " :"bg-gray-200 px-2 rounded hover:bg-gray-300 "}`} onClick={(e) => ( changestatus(e,index,"pending",ord.order_id))}>pending</p>
-                    <p className={`text-[14px] cursor-pointer ${theme === "dark"? " bg-gray-600 px-2 rounded hover:bg-gray-700 " :"bg-gray-200 px-2 rounded hover:bg-gray-300 "}`} onClick={(e) => ( changestatus(e,index,"shipped",ord.order_id))}>shipped</p>
-                    <p className={`text-[14px] cursor-pointer ${theme === "dark"? " bg-gray-600 px-2 rounded hover:bg-gray-700 " :"bg-gray-200 px-2 rounded hover:bg-gray-300 "}`} onClick={(e) => ( changestatus(e,index,"delivered",ord.order_id))}>delivered</p>
+                    <p className={`text-[14px] cursor-pointer ${theme === "dark" ? " bg-gray-600 px-2 rounded hover:bg-gray-700 " : "bg-gray-200 px-2 rounded hover:bg-gray-300 "}`} onClick={(e) => (changestatus(e, index, "pending", ord.order_id))}>pending</p>
+                    <p className={`text-[14px] cursor-pointer ${theme === "dark" ? " bg-gray-600 px-2 rounded hover:bg-gray-700 " : "bg-gray-200 px-2 rounded hover:bg-gray-300 "}`} onClick={(e) => (changestatus(e, index, "shipped", ord.order_id))}>shipped</p>
+                    <p className={`text-[14px] cursor-pointer ${theme === "dark" ? " bg-gray-600 px-2 rounded hover:bg-gray-700 " : "bg-gray-200 px-2 rounded hover:bg-gray-300 "}`} onClick={(e) => (changestatus(e, index, "delivered", ord.order_id))}>delivered</p>
                   </div>
                   {/* <p className="text-blue-500 text-[13px] cursor-pointer hover:underline mt-3" >view</p> */}
                 </div>
-                
+
               </TableRow>
 
             )) : null}

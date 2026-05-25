@@ -16,7 +16,7 @@ export default function SignInForm() {
   const Submit=(e)=>{
     e.preventDefault()
     authcontext.runfunction(null,formData,"login")
-    console.log(formData)
+    
   }
 
   return (

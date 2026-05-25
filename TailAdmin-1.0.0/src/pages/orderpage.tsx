@@ -18,20 +18,20 @@ const orderpage = () => {
 
   const fetchorder = async () => {
     try {
-    const res = await axios.get(`${context.url}order/get/order/${id}`, { headers: { Authorization: `Bearer ${authcontext.access}` } })
+      const res = await axios.get(`${context.url}order/get/order/${id}`, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
       setOrder(res.data)
     }
-    catch(error:any){
-      if (error.response?.status === 401){
-        const flag = authcontext.runfunction(null,null,"checkuserauth")
-        if (flag){
-          const res = await axios.get(`${context.url}order/get/order/${id}`, { headers: { Authorization: `Bearer ${authcontext.access}` } })
+    catch (error: any) {
+      if (error.response?.status === 401) {
+        const flag = await authcontext.runfunction(null, null, "checkuserauth")
+        if (flag) {
+          const res = await axios.get(`${context.url}order/get/order/${id}`, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
           setOrder(res.data)
         }
       }
-      else{console.log(error)}
+      else { console.log(error) }
     }
-    }
+  }
 
   useEffect(() => {
     fetchorder()

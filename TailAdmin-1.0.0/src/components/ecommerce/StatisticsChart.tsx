@@ -3,7 +3,7 @@ import { ApexOptions } from "apexcharts";
 
 import { useEffect, useState } from "react";
 
-export default function StatisticsChart({month,total_order}) {
+export default function StatisticsChart({ month, total_order }) {
 
   const options: ApexOptions = {
     legend: {
@@ -63,7 +63,7 @@ export default function StatisticsChart({month,total_order}) {
     },
     xaxis: {
       type: "category", // Category-based x-axis
-      categories:month,
+      categories: month,
       axisBorder: {
         show: false, // Hide x-axis border
       },

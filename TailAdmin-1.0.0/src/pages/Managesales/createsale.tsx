@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent,useEffect, FormEvent,useContext } from 'react';
+import React, { useState, ChangeEvent, useEffect, FormEvent, useContext } from 'react';
 import axios from 'axios';
 // import { useTheme } from "../../context/ThemeContext";
 import { FullSiteContext } from '../../context/fullsitecontext';
@@ -19,7 +19,7 @@ interface SaleFormData {
   category: string[]; // Array of Category IDs
   start_date: string; // ISO string for datetime-local input
   end_date: string;   // ISO string for datetime-local input
-  
+
 }
 
 // interface CategoryOption {
@@ -41,15 +41,15 @@ const Spinner: React.FC = () => (
 const SaleWizardForm: React.FC = () => {
   // const { theme } = useTheme();
   const Navigation = useNavigate()
-  const context:any= useContext(FullSiteContext)
-  const authcontext:any= useContext(Authenticate)
+  const context: any = useContext(FullSiteContext)
+  const authcontext: any = useContext(Authenticate)
   // State
   const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [catagory,setcatagory]= useState<any>([])
+  const [catagory, setcatagory] = useState<any>([])
 
   const [formData, setFormData] = useState<SaleFormData>({
     name: '',
@@ -66,15 +66,15 @@ const SaleWizardForm: React.FC = () => {
 
 
   useEffect(() => {
-        // Fetch Categories with ID
-        axios.get(`${context.url}catagory/`)
-            .then((res) => {
-                // Assuming API returns list of objects with id and name
-                setcatagory(res.data); 
-            })
-            .catch(err => console.log(err));
-    }, []);
-    
+    // Fetch Categories with ID
+    axios.get(`${context.url}catagory/`)
+      .then((res) => {
+        // Assuming API returns list of objects with id and name
+        setcatagory(res.data);
+      })
+      .catch(err => console.log(err));
+  }, []);
+
   // Derived State for Progress Bar
   const progress = ((step - 1) / 2) * 100;
 
@@ -82,10 +82,10 @@ const SaleWizardForm: React.FC = () => {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' || type === 'checkbox' 
+      [name]: type === 'number' || type === 'checkbox'
         ? (type === 'checkbox' ? (e.target as HTMLInputElement).checked : Number(value))
         : value
     }));
@@ -95,7 +95,7 @@ const SaleWizardForm: React.FC = () => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setFormData(prev => ({ ...prev, banner_image: file }));
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => setPreviewUrl(reader.result as string);
@@ -139,11 +139,11 @@ const SaleWizardForm: React.FC = () => {
         setError("Start date and End date are required.");
         return false;
       }
-      if (new Date(formData.start_date) >= new Date(formData.end_date) ) {
+      if (new Date(formData.start_date) >= new Date(formData.end_date)) {
         setError("End date must be after Start date.");
         return false;
       }
-      if (new Date > new Date(formData.end_date)){
+      if (new Date > new Date(formData.end_date)) {
         setError("the end date must be after the current date");
         return false;
       }
@@ -167,13 +167,13 @@ const SaleWizardForm: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validateStep(3)) return;
-   
+
     setLoading(true);
     setError(null);
-    console.log(formData)
+
     try {
       const dataPayload = new FormData();
-      
+
       // Append all fields
       dataPayload.append('name', formData.name);
       dataPayload.append('title', formData.title);
@@ -190,33 +190,30 @@ const SaleWizardForm: React.FC = () => {
       // Append category array (common backend convention for FormData arrays)
       // dataPayload.append('category', JSON.stringify(formData.category))
       formData.category.forEach(id => {
-  dataPayload.append('category', id);
-});
+        dataPayload.append('category', id);
+      });
 
-    //   Simulate API call
-    try{
-      const res= await axios.post(`${context.url}sales/create/`, dataPayload ,{headers:{Authorization:`Bearer ${authcontext.access}`}});
-      context.setchecknote(res.data.message);
-      setSuccess(true);
-    }catch(error:any){
-      if (error.respose?.status=== 401){
-        const flag= authcontext.runfunction(null ,null , "checkuserauth")
-        if (flag){
-          const res= await axios.post(`${context.url}sales/create/`, dataPayload ,{headers:{Authorization:`Bearer ${authcontext.access}`}});
-          context.setchecknote(res.data.message);
-          setSuccess(true);
+      //   Simulate API call
+      try {
+        const res = await axios.post(`${context.url}sales/create/`, dataPayload, { headers: { Authorization: `Bearer ${authcontext.access.current}` } });
+        context.setchecknote(res.data.message);
+        setSuccess(true);
+      } catch (error: any) {
+        if (error.respose?.status === 401) {
+          const flag = await authcontext.runfunction(null, null, "checkuserauth")
+          if (flag) {
+            const res = await axios.post(`${context.url}sales/create/`, dataPayload, { headers: { Authorization: `Bearer ${authcontext.access.current}` } });
+            context.setchecknote(res.data.message);
+            setSuccess(true);
+          }
         }
       }
-    }
-      // await axios.post(`${context.url}sales/create/`, dataPayload )
-      // .then(res=>{context.setchecknote(res.data.message), setSuccess(true);})
-      // .catch((err)=>{console.log(err.data.error),context.setchecknote("error "), setSuccess(false);})
-     
+
       // Mocking delay for UX demonstration
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
-    //   console.log("Payload prepared for backend:", Object.fromEntries(dataPayload));
-     
+
+      //   console.log("Payload prepared for backend:", Object.fromEntries(dataPayload));
+
     } catch (err) {
       setError("Failed to create sale. Please try again.");
       console.error(err);
@@ -242,24 +239,24 @@ const SaleWizardForm: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4 transition-colors duration-200">
-      
+
       <div className={`w-full max-w-2xl ${cardClass}`}>
         {/* Header */}
         <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Create New Sale</h2>
-          <button className="text-gray-500 hover:text-indigo-500 transition-colors" onClick={()=> Navigation('/Dashboard/show/sales/')}>
+          <button className="text-gray-500 hover:text-indigo-500 transition-colors" onClick={() => Navigation('/Dashboard/show/sales/')}>
             <X ></X>
           </button>
         </div>
 
         {/* Progress Bar */}
         <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5">
-          <div 
-            className="bg-indigo-600 h-1.5 transition-all duration-500 ease-out" 
+          <div
+            className="bg-indigo-600 h-1.5 transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-        
+
         {/* Step Indicator */}
         <div className="px-6 py-4 flex justify-between text-xs font-semibold tracking-wide text-gray-500 uppercase">
           <span className={step >= 1 ? "text-indigo-600" : ""}>1. Basic Info</span>
@@ -297,7 +294,7 @@ const SaleWizardForm: React.FC = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              
+
               {/* STEP 1: Basic Info */}
               {step === 1 && (
                 <div className="space-y-4 animate-fade-in">
@@ -312,7 +309,7 @@ const SaleWizardForm: React.FC = () => {
                       placeholder="e.g. Summer Sale 2024"
                     />
                   </div>
-                  
+
                   <div>
                     <label className={labelClass + " text-gray-700 dark:text-gray-300"}>Title (Optional)</label>
                     <input
@@ -408,7 +405,7 @@ const SaleWizardForm: React.FC = () => {
                     <div className="mt-4">
                       <label className={labelClass + " text-gray-700 dark:text-gray-300"}>Select Categories</label>
                       <div className="mt-2 grid grid-cols-2 gap-3">
-                        {catagory.map((cat:any) => (
+                        {catagory.map((cat: any) => (
                           <div key={cat.id} className="flex items-center">
                             <input
                               id={`cat-${cat.id}`}
@@ -467,16 +464,16 @@ const SaleWizardForm: React.FC = () => {
                       <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${formData.is_active ? 'translate-x-5' : 'translate-x-0'}`} />
                     </button> */}
                   </div>
-                  
+
                   {/* Preview Summary (Bonus) */}
-                   <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
-                     <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Summary</h4>
-                     <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                       <p><span className="font-medium">Name:</span> {formData.name}</p>
-                       <p><span className="font-medium">Discount:</span> {formData.discount_percent}% off {formData.apply_on === 'all' ? 'All Products' : 'Selected Categories'}</p>
-                       {/* <p><span className="font-medium">Status:</span> {formData.is_active ? 'Active' : 'Inactive'}</p> */}
-                     </div>
-                   </div>
+                  <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Summary</h4>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                      <p><span className="font-medium">Name:</span> {formData.name}</p>
+                      <p><span className="font-medium">Discount:</span> {formData.discount_percent}% off {formData.apply_on === 'all' ? 'All Products' : 'Selected Categories'}</p>
+                      {/* <p><span className="font-medium">Status:</span> {formData.is_active ? 'Active' : 'Inactive'}</p> */}
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -490,7 +487,7 @@ const SaleWizardForm: React.FC = () => {
                 >
                   Back
                 </button>
-                
+
                 {step < 3 ? (
                   <button
                     type="button"
@@ -523,9 +520,9 @@ const SaleWizardForm: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    
-      <SaleWizardForm />
-    
+
+    <SaleWizardForm />
+
   );
 };
 

@@ -21,7 +21,7 @@ export default function RecentOrders() {
   const [product, setProduct] = useState<any>()
   const [option, setoption] = useState<any>(null)
   const [catagory, setcatagory] = useState<any>()
-  const [filter, setfilter] = useState({stock:"" ,ctg:""})
+  const [filter, setfilter] = useState({ stock: "", ctg: "" })
   const [checkfilter, setcheckfilter] = useState("top-[-100px]")
 
   const context: any = useContext(FullSiteContext)
@@ -34,8 +34,8 @@ export default function RecentOrders() {
 
   const fetchProducts = async () => {
     try {
-      
-        await axios.get(`${context.url}get/`, { params: { dashproduct: "true", ...filter }})
+
+      await axios.get(`${context.url}get/`, { params: { dashproduct: "true", ...filter } })
         .then(res => { setProduct(res.data) })
         .catch(err => { console.log(err) })
 
@@ -74,11 +74,11 @@ export default function RecentOrders() {
 
   }
 
-  const clearfunction= async() =>{
-     setcheckfilter("top-[-100px]")
-      setfilter({stock:"" ,ctg:""})
-     try {
-      console.log(filter)
+  const clearfunction = async () => {
+    setcheckfilter("top-[-100px]")
+    setfilter({ stock: "", ctg: "" })
+    try {
+
       await axios.get(`${context.url}get/`, { params: { dashproduct: "true" } })
         .then(res => { setProduct(res.data) })
         .catch(err => { console.log(err) })
@@ -87,7 +87,7 @@ export default function RecentOrders() {
       console.log(err)
     };
 
-    }
+  }
 
   // redirect to manage product page after delete proeuct 
   { context.deleteflag ? (fetchProducts(), context.setdeleteflag(false)) : null }
@@ -99,7 +99,7 @@ export default function RecentOrders() {
       <div className={`${mainbg} h-[50px] items-center flex justify-between block border px-1 rounded absolute w-[calc(100%-30px)] sm:w-[calc(100%-44px)] z-30 transition-all duration-1000 ${checkfilter}`}>
         <div className={`${mainbg} flex gap-2 flex items-center justify-center`}>
 
-          <select value={filter.stock} name="stock" id="" className={`h-[35px] w-[70px] rounded text-[14px] ${mainbg} `}  onChange={(e) => addfiltervalue(e)}>
+          <select value={filter.stock} name="stock" id="" className={`h-[35px] w-[70px] rounded text-[14px] ${mainbg} `} onChange={(e) => addfiltervalue(e)}>
             <option value="">stock</option>
             <option value="in stock">In stock</option>
             <option value="low stock">Low stock</option>

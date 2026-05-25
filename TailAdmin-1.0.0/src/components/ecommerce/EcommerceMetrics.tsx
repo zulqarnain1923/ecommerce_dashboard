@@ -1,35 +1,35 @@
-import { BoxIconLine,} from "../../icons";
+import { BoxIconLine, } from "../../icons";
 import axios from "axios";
-import { useEffect,useState,useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Authenticate } from "../../context/AuthenticContext";
 
 
 
 export default function EcommerceMetrics() {
-    
-    const authcontext=useContext(Authenticate)
-    const [data,setData]=useState<any>(null)
 
-   useEffect(()=>{
-    const fetchdata=async()=>{
-      try{
-        const res=await axios.get(`${authcontext.url}order/total/data/`, {headers:{Authorization:`Bearer ${authcontext.access}`}})
+  const authcontext = useContext(Authenticate)
+  const [data, setData] = useState<any>(null)
+
+  useEffect(() => {
+    const fetchdata = async () => {
+      try {
+        const res = await axios.get(`${authcontext.url}order/total/data/`, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
         setData(res.data)
-        
-      } catch (error:any) {
-        if (error.response?.status === 401){
 
-          const flag= authcontext.runfunction(null,null,"checkuserauth")
-          if (flag){
-            const res=await axios.get(`${authcontext.url}order/total/data/`, {headers:{Authorization:`Bearer ${authcontext.access}`}})
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+
+          const flag = await authcontext.runfunction(null, null, "checkuserauth")
+
+          if (flag) {
+            const res = await axios.get(`${authcontext.url}order/total/data/`, { headers: { Authorization: `Bearer ${authcontext.access.current}` } })
             setData(res.data)
           }
-
         }
       }
     }
     fetchdata()
-   },[])
+  }, [])
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 md:gap-6">
       {/* <!-- Metric Item Start --> */}
@@ -38,11 +38,11 @@ export default function EcommerceMetrics() {
           <BoxIconLine className="text-gray-800 size-6 dark:text-white/90" />
         </div>
         <div className="flex items-end justify-between mt-5">
-          <div className="flex  items-center justify-between w-full"> 
+          <div className="flex  items-center justify-between w-full">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Products
             </p>
-           <h4 className="mt-2 font-bold text-green-800 text-title-sm dark:text-white/90">
+            <h4 className="mt-2 font-bold text-green-800 text-title-sm dark:text-white/90">
               {data?.total_products}
             </h4>
           </div>
@@ -56,7 +56,7 @@ export default function EcommerceMetrics() {
           <BoxIconLine className="text-gray-800 size-6 dark:text-white/90" />
         </div>
         <div className="flex items-end justify-between mt-5">
-          <div className="flex  items-center justify-between w-full"> 
+          <div className="flex  items-center justify-between w-full">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Orders
             </p>
@@ -74,7 +74,7 @@ export default function EcommerceMetrics() {
           <BoxIconLine className="text-gray-800 size-6 dark:text-white/90" />
         </div>
         <div className="flex items-end justify-between mt-5">
-          <div className="flex  items-center justify-between w-full"> 
+          <div className="flex  items-center justify-between w-full">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Users
             </p>
